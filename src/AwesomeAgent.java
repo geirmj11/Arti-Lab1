@@ -62,6 +62,7 @@ public class AwesomeAgent implements Agent
 
 		if (orientation == 2){
 			State = 1;
+			DisWestWall = 0;
 			return TURN_LEFT;
 		}
 		return GO;
@@ -71,8 +72,20 @@ public class AwesomeAgent implements Agent
 	{
 		if (percept.equals("") && TurnState == 0)
 			return GO;
+        if(lastTurn == TURN_RIGHT && DisEastWall == 0){
+            TurnState = 1;
+            lastTurn = TURN_LEFT;
+            return lastTurn;
+        }
+        if(lastTurn == TURN_LEFT && DisWestWall == 0){
+            TurnState = 1;
+            lastTurn = TURN_RIGHT;
+            return lastTurn;
+        }
+        
 		if (percept.equals(BUMP) && TurnState == 0) {
 			TurnState = 1;
+			DisEastWall = 0;
 			lastTurn = orientation == 1 ? TURN_RIGHT : TURN_LEFT;
 			return lastTurn;
 		}
@@ -88,7 +101,6 @@ public class AwesomeAgent implements Agent
 			TurnState = 0;
 			return lastTurn;
 		}
-
 		return GO;
 	}
 
