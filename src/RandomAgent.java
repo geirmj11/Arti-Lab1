@@ -3,6 +3,8 @@ import java.util.Random;
 
 public class RandomAgent implements Agent
 {
+	
+
 	private Random random = new Random();
     public String nextAction(Collection<String> percepts) {
 		System.out.print("perceiving:");
