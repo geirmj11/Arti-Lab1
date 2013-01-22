@@ -1,0 +1,77 @@
+\documentclass[11pt]{article}
+\usepackage[icelandic]{babel}
+\usepackage{amsmath}
+\usepackage{array}
+%margins
+\usepackage[margin=1in]{geometry}            
+\geometry{a4paper} 
+%fjarlægir paragraph tab
+\setlength{\parindent}{0mm}
+
+
+%Fontinn
+\usepackage[T1]{fontenc}
+%\usepackage[adobe-utopia]{mathdesign}
+%\usepackage{concmath}
+\usepackage{fourier}
+%\usepackage[condensed,math]{iwona}
+%\usepackage[bitstream-charter]{mathdesign}
+%\usepackage{arev}
+%fyrir myndir
+\usepackage[pdftex]{graphicx}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+%leyfir litaðar töflur
+\usepackage[table]{xcolor}
+
+
+\usepackage{pgf}
+\usepackage[utf8]{inputenc}
+
+\pagestyle{headings}
+\usepackage[small,compact]{titlesec}
+
+%Header
+\usepackage{fancyhdr}
+\setlength{\headheight}{25.5pt}
+\pagestyle{fancy}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{arrows, shapes, positioning}
+% Pages styles
+\newcommand{\tab}{\hspace*{2em}}
+
+\title{\includegraphics[width=5cm]{HR-Logo-bw} \\Artificial Intelligence\\ Lab 1 - Agents}
+\author{Geir Matti Järvelä \and Þorgeir Auðunn Karlsson}
+\lhead[lh-even]{T-622-ARTI - Artificial Intelligence}
+\rhead[rh-even]{Geir Matti Järvelä (geirmj11@ru.is) \\ Þorgeir Auðunn Karlsson (thorgeirk11@ru.is)}
+
+\begin{document}
+\maketitle
+\section{Characterization of environment}
+The environment only changes when the agent does something, and thus it is static.  \\
+The environment is deterministic, since the result of every action is forseeable by an outside observer.
+\section{Description of strategy}
+Our agent follows a  very basic strategy. It starts in state 0, and in this state it searches for the top left  corner (from it's own perspective). 
+It achieves this following a simple algorithm. \\
+$\quad\bullet$ go straight ahead until it bumps into a wall. \\
+$\quad\bullet$ turn left. \\
+$\quad\bullet$ go straight until it bumps into a wall. \\
+After this, it goes into state 1. In this state it sweeps the map in a criss-cross motion, without bumping into walls it has already bumped into. It does this 
+until it bumps into the fourth and final wall. At that point it goes into state 2. \\
+In state 2, the agent walks "north" until it is aligned with the starting position, turns until it faces the starting position and walks to it. It then shuts off.
+\section{Java code changes}
+Our agent is implemented in the file "AwesomeAgent.java". Small changes were made to the main file (one word changed) in order to make the program use our agent.
+\section{Test results}
+\subsection{Basic vacuumcleaner level (vacuumcleaner.gdl)}
+Our agent completed the basic level 56 steps and got 49 points.
+\subsection{Small random level (vacuumcleaner\_random.gdl)}
+Our agent completed the small random level in 60 steps and got 45 points.
+\subsection{Large random level (vacuumcleaner\_random\_big.gdl)}
+Our agent completed the large random level in 167 steps and got 43 points.
+\section{Is the agent rational?}
+The anwser depends on how we measure the performance. It does not give the optional result for the map, for this a better pathfinding and mapping would be required.\\
+However it does do a few things that can be called rational. It doesn't bump into the same wall twice, it goes straight home when it has cleaned the entire room, 
+and it starts by learning. It also always cleans when it can. It learns about the environment, and it keeps track of home. \\
+If our performance measure is simply "be able to clean the room, and not do the same mistake twice (i.e. bumping into a wall), then we can argue that the agent is
+rational.
+\end{document}
