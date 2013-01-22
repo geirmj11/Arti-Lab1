@@ -11,7 +11,7 @@ public class AwesomeAgent implements Agent
 	final String TURN_OFF = "TURN_OFF";
 	final String SUCK = "SUCK";
 	final String GO = "GO";
-
+    
 	int orientation;
 	int StartX;
 	int StartY;
@@ -25,12 +25,10 @@ public class AwesomeAgent implements Agent
 	int DisWestWall = -1;
 
     public String nextAction(Collection<String> percepts) {
-		System.out.print("STATE = "+State+", orientation = "+ orientation +"\n");
 		String command = GO;
 		String percept = "";
 		for (String p : percepts) {
 			percept = p;
-			System.out.print("This happend: '" + percept.trim() + "'\n");
 			if (percept.equals(DIRT))
 				return SUCK;
 		}
@@ -56,36 +54,51 @@ public class AwesomeAgent implements Agent
 
 	String FindNorthLeftCorner(String percept)
 	{
-		if (percept.equals(BUMP))
-			if (orientation == 0 || orientation == 3)
+		if (percept.equals(BUMP)){
+			if (orientation == 0){
+			    StartY--;
 				return TURN_LEFT;
+			}
 
-		if (orientation == 2){
-			State = 1;
-			DisWestWall = 0;
-			return TURN_LEFT;
+		    if (orientation == 3){
+			    State = 1;
+			    StartX--;
+			    StartY--;
+			    DisWestWall = 0;
+			    TurnState = 2;
+			    lastTurn = TURN_LEFT;
+			    return lastTurn;
+		    }
 		}
 		return GO;
 	}
 
 	String Sweep(String percept)
 	{
-		if (percept.equals("") && TurnState == 0)
-			return GO;
-        if(lastTurn == TURN_RIGHT && DisEastWall == 0){
-            TurnState = 1;
-            lastTurn = TURN_LEFT;
-            return lastTurn;
-        }
-        if(lastTurn == TURN_LEFT && DisWestWall == 0){
+        if(lastTurn == TURN_LEFT && DisEastWall == 0){
             TurnState = 1;
             lastTurn = TURN_RIGHT;
             return lastTurn;
         }
-        
+        if(lastTurn == TURN_RIGHT && DisWestWall == 0){
+            TurnState = 1;
+            lastTurn = TURN_LEFT;
+            return lastTurn;
+        }
+        if (percept.equals("") && TurnState == 0)
+			return GO;
 		if (percept.equals(BUMP) && TurnState == 0) {
 			TurnState = 1;
-			DisEastWall = 0;
+			if(orientation == 1) {
+			    DisEastWall = 0;
+			    DisWestWall--;  
+			    StartX++; 
+			}
+			if(orientation == 3) {
+	            DisWestWall = 0;
+	            DisEastWall--;    
+	            StartX--;
+	        }
 			lastTurn = orientation == 1 ? TURN_RIGHT : TURN_LEFT;
 			return lastTurn;
 		}
@@ -95,6 +108,7 @@ public class AwesomeAgent implements Agent
 		}
 		if (percept.equals(BUMP) && TurnState == 2) {
 			State = 2; // Just hit the last wall.
+			StartY++;
 			return lastTurn;
 		}
 		if (TurnState == 2) {
@@ -108,20 +122,20 @@ public class AwesomeAgent implements Agent
 	{
 	    if(StartX == 0 && StartY == 0)
 	        return TURN_OFF;
-	    if(StartY > 0 && orientation == 2)
+	    if(StartY < 0 && orientation == 0)
 	        return GO;
-	    if(StartY > 0 && orientation != 2)
+	    if(StartY < 0 && orientation != 0)
 	        return lastTurn;
-	    if(StartX < 0 && orientation != 3)
-	        return lastTurn;
-	    if(StartX > 0 && orientation != 1)
-	        return lastTurn;
-	    return GO; 
+
+	    if(StartX < 0 && orientation == 3)
+	        return GO;
+	    if(StartX > 0 && orientation == 1)
+	        return GO;
+	    return lastTurn; 
 	}
 
 	void trackPosition(String command)
 	{
-		System.out.print("Command from TrackPosistion: " + command + "\n" + "StartX: " + StartX + "\nStartY: " + StartY + "\n");
 		if (command.equals(TURN_LEFT))
 			orientation = (orientation + 3) % 4;
 		if (command.equals(TURN_RIGHT))
@@ -135,9 +149,9 @@ public class AwesomeAgent implements Agent
 					break;
 
 				case 1: // East
-					if (DisEastWall >= 0)
+					if (State == 1)
 						DisEastWall--;
-					if (DisWestWall >= 0)
+					if (State == 1)
 						DisWestWall++;
 
 					StartX--;
@@ -148,14 +162,19 @@ public class AwesomeAgent implements Agent
 					break;
 
 				case 3: // West
-					if (DisWestWall >= 0)
+					if (State == 1){
 						DisWestWall--;
-					if (DisEastWall >= 0)
+				    }
+					if (State == 1){
 						DisEastWall++;
-
+					}
 					StartX++;
 					break;
 			}
 		}
+		//System.out.print("::::::::::::::::\nSTATE = " + State + " \t\t\tCommand: " + command + "--------------------\n");
+		System.out.print("-------------\nSTATE = " + State + ", orientation = "+ orientation + " Command: " + command);
+		System.out.print("\n" + "StartX: " + StartX + "\nStartY: " + StartY);
+		System.out.print("\nWest Wall: " + DisWestWall + "\nEast Wall: " + DisEastWall + "\n:::::::::::::\n");            
 	}
 }
